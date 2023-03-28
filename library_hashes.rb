@@ -1,3 +1,4 @@
+# Array (Library) of Hashes (Books)
 library = [
   {
     title: "holes",
@@ -145,9 +146,7 @@ library = [
 },
 ]
 
-
-
-
+# Methods for user search
 def title_search (catalog, book_title)
   result_title = catalog.select{|book| book[:title].downcase.include?(book_title)}.map{|book| book[:title]}
   result_author = catalog.select{|book| book[:title].downcase.include?(book_title)}.map{|book| book[:author]}
@@ -175,12 +174,6 @@ def author_search (catalog, book_author)
   end
 end
 
-def age_level_search (catalog, book_age_level)
-end
-
-def genre_search (catalog, book_genre)
-end
-
 def show_all_books(catalog)
   i = 0
   catalog.each do |book|
@@ -189,9 +182,11 @@ def show_all_books(catalog)
   end
 end
 
+
 puts "Welcome to the Langner Library"
 25.times{print " -"}
 
+# loop to allow user to continue searching withour starting the program each time
 loop do
   puts
   puts "How do you want to search?"
