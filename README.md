@@ -2,7 +2,7 @@
 
 ---
 
-## Ruby Library — _Learning Ruby Documented in Stages_
+## Library Catalog — _Learning Ruby Documented in Stages_
 
 ### Joshua Langner
 
