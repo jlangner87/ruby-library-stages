@@ -124,8 +124,6 @@ def add_book title, author_last_name, author_first_name, genre, audience, book_b
   Book.new(title, author_last_name, author_first_name, genre, audience, book_binding, location)
 end
 
-add_book "This", "Doctor", "Who", "Scary", "humans", "Sheepskin", "Under the refrigerator"
-
 # Method checking the status of a book
 def status_query title
   Book.catalog.each { |book|
@@ -149,9 +147,17 @@ def process_checkout title, name
   }
 end
 
+def process_checkin title
+  Book.catalog.each { |book|
+  if book.title.downcase == title.downcase
+    book.status = "available"
+    book.holder = "The Library"
+  end
+  }
+end
 
 # loop to allow user to search the library
-def search_catalog name
+def search_catalog name, role
   search_methods = ["A = Browse All", "B = By Title", "C = By Author", "D = By Genre", "E = By Audience Age", "F = By Age & Genre"]
   loop do
     puts
@@ -163,6 +169,9 @@ def search_catalog name
     elsif response == "b"
       puts
       puts "Searching by TITLE"
+      puts "Which title do you want to search?"
+      title = gets.chomp.downcase
+      search_by_title title
     elsif response == "c"
       puts
       puts "Searching AUTHOR"
@@ -178,6 +187,14 @@ def search_catalog name
     else
       puts
       puts "That is not a search method. Try again."
+    end
+    puts
+    puts " Do you want to keep searching? (Y/N)"
+    continue_response = gets.chomp.downcase
+    if continue_response != "y"
+      puts
+      puts "Exiting search..."
+      primary_flow name, role
     end
   end
 end
@@ -214,29 +231,81 @@ def checkout_flow name
         if response != "y"
           puts "Thank you. Come again."
           break
-        else
         end
+      end
+    else
+      puts
+      puts "Do you want to search for a different book? (Y/N)"
+      response = gets.chomp.downcase
+      if response != "y"
+        break
       end
     end
   end
 end
 
 #loop allowing user to move between browsing and checking out
-puts "Welcome to the Langner Library."
-puts "Please enter your full name."
-name = gets.chomp
-puts
-puts "Welcome #{name}!"
+def authenticator
+  puts "Welcome to the Langner Library."
+  puts "Please enter your full name."
+  name = gets.chomp
+  puts
+  puts "Welcome #{name}!"
+  puts "Are you a card holder or library staff?"
+  puts " Enter C for card holder or S for staff:"
+  role = gets.chomp.downcase
+  primary_flow name, role
+end
 
-loop do
-  puts "Would you like to browse the titles or check something out now?"
-  puts "enter B to browse or C to checkout."
-  flow = gets.chomp.downcase
-  if flow == "b"
-    search_catalog name
-  elsif flow == "c"
-    checkout_flow name
-  else
-    "That was not an option. Let's try that again"
+def primary_flow name, role
+  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Exit"]
+  loop do
+    if role != "s"
+      puts
+      puts "Would you like to browse the titles or check something out now?"
+      puts "Enter B to browse or C to checkout."
+      flow = gets.chomp.downcase
+      if flow == "b"
+        search_catalog name, role
+      elsif flow == "c"
+        checkout_flow name
+      else
+        "That was not an option. Let's try that again"
+      end
+    else
+      puts
+      puts "What would you like to do?"
+      puts staff_activity
+      activity_response = gets.chomp.downcase
+        if activity_response == "a"
+          puts
+          puts "Entering Library Search..."
+          search_catalog name, role
+        elsif activity_response == "b"
+          puts
+          puts "B"
+        elsif activity_response == "c"
+          puts
+          puts "C"
+        elsif activity_response == "d"
+          puts
+          puts "D"
+        elsif activity_response == "e"
+          puts
+          puts "Okay, bye."
+          abort
+        else
+          puts "That is not an option. Try again."
+        end
+        puts "Would you like to do something else? (Y/N)"
+          response = gets.chomp.downcase
+          if response != "y"
+            puts
+            puts "Thank you. See you soon."
+            abort
+      end
+    end
   end
 end
+
+authenticator
