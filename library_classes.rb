@@ -119,6 +119,13 @@ def search_by_genre_audience_age genre, audience
   puts "End of results"
 end
 
+# Method creating a new instance of the book. At this point, it only works until the loop closes
+def add_book title, author_last_name, author_first_name, genre, audience, book_binding, location
+  Book.new(title, author_last_name, author_first_name, genre, audience, book_binding, location)
+end
+
+add_book "This", "Doctor", "Who", "Scary", "humans", "Sheepskin", "Under the refrigerator"
+
 # Method checking the status of a book
 def status_query title
   Book.catalog.each { |book|
