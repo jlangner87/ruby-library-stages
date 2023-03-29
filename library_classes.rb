@@ -220,7 +220,7 @@ def checkout_flow name
         response = gets.chomp.downcase
         if response != "y"
           puts "Happy Reading! Hope to see you soon!"
-          break
+          authenticator
         end
       else
         puts
@@ -230,7 +230,7 @@ def checkout_flow name
         response = gets.chomp.downcase
         if response != "y"
           puts "Thank you. Come again."
-          break
+          authenticator
         end
       end
     else
@@ -238,7 +238,7 @@ def checkout_flow name
       puts "Do you want to search for a different book? (Y/N)"
       response = gets.chomp.downcase
       if response != "y"
-        break
+        authenticator
       end
     end
   end
@@ -283,7 +283,10 @@ def primary_flow name, role
           search_catalog name, role
         elsif activity_response == "b"
           puts
-          puts "B"
+          puts "Checking in a book..."
+          puts "Which book are you checking in?"
+          title = gets.chomp.downcase
+          process_checkin title
         elsif activity_response == "c"
           puts
           puts "C"
@@ -302,7 +305,7 @@ def primary_flow name, role
           if response != "y"
             puts
             puts "Thank you. See you soon."
-            abort
+            authenticator
       end
     end
   end
