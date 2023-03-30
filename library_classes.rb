@@ -54,10 +54,12 @@ Book.new("Our Town", "Thornton", "Wilder", "SCR", "A", "Paperback", "Office: des
 
 # Search methods
 def browse_all
+  puts
   puts Book.catalog.sort_by {|book| book.title}
 end
 
 def search_by_title title
+  puts
   puts "Books matching the title: #{title}"
   20.times{print " -"}
   puts
@@ -73,6 +75,7 @@ def search_by_title title
 end
 
 def search_by_author l_name, *f_name
+  puts
   puts "Books matching the author: #{f_name} #{l_name}"
   20.times{print " -"}
   puts
@@ -86,6 +89,7 @@ def search_by_author l_name, *f_name
 end
 
 def search_by_genre genre
+  puts
   puts "Books matching the genre: #{genre}"
   20.times{print " -"}
   puts
@@ -99,6 +103,7 @@ def search_by_genre genre
 end
 
 def search_by_audience_age audience
+  puts
   puts "Books matching the audience age: #{audience}"
   20.times{print " -"}
   puts
@@ -112,6 +117,7 @@ def search_by_audience_age audience
 end
 
 def search_by_genre_audience_age genre, audience
+  puts
   puts "Books matching: #{audience} & #{genre}"
   20.times{print " -"}
   puts
@@ -127,6 +133,15 @@ end
 # Method creating a new instance of the book. At this point, it only works until the loop closes
 def add_book title, author_last_name, author_first_name, genre, audience, book_binding, location
   Book.new(title, author_last_name, author_first_name, genre, audience, book_binding, location)
+end
+
+# Method deleting an instance of a book
+def delete_book title
+  Book.catalog.sort_by {|book| 
+    if book.title.downcase == title.downcase
+      book.delete(title)
+    end
+  }
 end
 
 # Method checking the status of a book
@@ -272,7 +287,8 @@ def checkout_flow name
   end
 end
 
-#loop allowing user to move between browsing and checking out
+# Authentication of user and splitting the control flow into user and staff branches
+#   FUTURE: I want to work actual authentication into this method.
 def authenticator
   puts "Welcome to the Langner Library."
   puts "Please enter your full name."
@@ -285,6 +301,7 @@ def authenticator
   primary_flow name, role
 end
 
+#loop allowing user to move between browsing and checking out
 def primary_flow name, role
   staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Exit"]
   loop do
@@ -307,20 +324,53 @@ def primary_flow name, role
       activity_response = gets.chomp.downcase
         if activity_response == "a"
           puts
-          puts "Entering Library Search..."
+          puts "Entering Library Search. . ."
           search_catalog name, role
         elsif activity_response == "b"
           puts
-          puts "Checking in a book..."
+          puts "Checking in a book. . ."
           puts "Which book are you checking in?"
           title = gets.chomp.downcase
           process_checkin title
         elsif activity_response == "c"
           puts
-          puts "C"
+          puts "Adding a book . . ."
+          print "Title: "
+          title = gets.chomp
+          puts
+          print "Author L Name: "
+          author_last_name = gets.chomp
+          puts
+          print "Author F Name: "
+          author_first_name = gets.chomp
+          puts
+          print "Genre: "
+          genre = gets.chomp
+          puts
+          print "Age Group: "
+          audience = gets.chomp
+          puts
+          print "Binding: "
+          book_binding = gets.chomp
+          puts
+          print "Location: "
+          location = gets.chomp
+          add_book title, author_last_name, author_first_name, genre, audience, book_binding, location
         elsif activity_response == "d"
           puts
-          puts "D"
+          puts "Deleting a book. . ."
+          puts "Which book would you like to delete?"
+          print "Title: "
+          title = gets.chomp.downcase
+          puts
+          puts "THIS IS IRREVERSIBLE! DO YOU WANT TO DELETE #{title.upcase}?"
+          puts "Enter #86! to delete. Enter anything else to cancel."
+          delete_response = gets.chomp.downcase
+          if delete_response != "#86!"
+            break
+          else
+            delete_book title
+          end
         elsif activity_response == "e"
           puts
           puts "Okay, bye."
