@@ -56,7 +56,7 @@ class User
       @@staff_list << self
     else
       @local_id = "M—#{@@local_id+= 1}"
-      @checkout_list = ["Seed Book"]
+      @checkout_list = []
       @checkout_qty = @checkout_list.length
       @@cardholder_list << self
     end
@@ -92,6 +92,9 @@ User.new("Joshua", "Langner", "password123", "staff")
 User.new("Ava", "Langner", "password123", "cardholder")
 User.new("Krista", "Langner", "password123", "staff")
 User.new("Reign", "Langner", "password123", "cardholder")
+User.new("Anya", "Langner", "password123", "cardholder")
+User.new("John", "Doe", "password123", "cardholder")
+User.new("Jane", "Doe", "password123", "cardholder")
 
 # Initializing seed books
 Book.new("Six of Crows", "Leigh", "Bardugo", "FNTSY", "YA", "Hardcover", "Office: desk shelf")
@@ -217,7 +220,7 @@ def status_query title
 end
 
 # Method changing the checkout status and book holder attributes
-def update_checkout_data title, input_name
+def update_user_data_out title, input_name
   User.cardholder_list.each {|user|
     if user.f_name.downcase == input_name.downcase
       user.checkout_list.append(title.upcase)
@@ -228,21 +231,33 @@ end
 
 def process_checkout title, name
   Book.catalog.each { |book|
-  if book.title.downcase == title.downcase
-    book.status = "checked out"
-    book.holder = name
+    if book.title.downcase == title.downcase
+      book.status = "checked out"
+      book.holder = name
   end
   }
-  update_checkout_data title, name
+  update_user_data_out title, name
+end
+
+def update_user_data_in user_f_name, title
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == user_f_name.downcase
+    user.checkout_list.delete(title.upcase)
+    user.checkout_qty -= 1
+  end
+  }
 end
 
 def process_checkin title
+  from_user = ""
   Book.catalog.each { |book|
   if book.title.downcase == title.downcase
+    from_user = book.holder
     book.status = "available"
     book.holder = "The Library"
   end
   }
+  update_user_data_in from_user, title
 end
 
 # Search method for all cardholders
