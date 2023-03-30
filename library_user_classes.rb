@@ -37,11 +37,13 @@ class Book
 end
 
 class User
-  attr_accessor :f_name, :l_name, :password, :role, :local_id
+  attr_accessor :f_name, :l_name, :password, :role, :local_id, :checkout_list, :checkout_qty
+  @@local_id = 100
   @@user_list = []
   @@staff_list = []
   @@cardholder_list = []
-  @@local_id = 100
+  @@checkout_qty = 0
+
 
   def initialize(f_name, l_name, password, role)
     @f_name = f_name
@@ -54,6 +56,8 @@ class User
       @@staff_list << self
     else
       @local_id = "M—#{@@local_id+= 1}"
+      @checkout_list = ["Seed Book"]
+      @checkout_qty = @checkout_list.length
       @@cardholder_list << self
     end
   end
@@ -70,6 +74,10 @@ class User
     @@cardholder_list
   end
 
+  def self.checkout_list
+    @@checkout_list
+  end
+
   def to_s
     puts
     "
@@ -84,26 +92,6 @@ User.new("Joshua", "Langner", "password123", "staff")
 User.new("Ava", "Langner", "password123", "cardholder")
 User.new("Krista", "Langner", "password123", "staff")
 User.new("Reign", "Langner", "password123", "cardholder")
-
-# def all_cardholders
-  User.cardholder_list.sort_by{|user| user.f_name
-    puts
-    puts "
-    Member ID: #{user.local_id}
-    Name: : #{user.l_name}, #{user.f_name}"
-  }
-# end
-
-# def all_staff
-  User.staff_list.sort_by{|user| user.f_name
-    puts
-    puts "
-    Staff ID: #{user.local_id}
-    Name: : #{user.l_name}, #{user.f_name}"
-}
-# end
-
-
 
 # Initializing seed books
 Book.new("Six of Crows", "Leigh", "Bardugo", "FNTSY", "YA", "Hardcover", "Office: desk shelf")
@@ -229,6 +217,15 @@ def status_query title
 end
 
 # Method changing the checkout status and book holder attributes
+def update_checkout_data title, input_name
+  User.cardholder_list.each {|user|
+    if user.f_name.downcase == input_name.downcase
+      user.checkout_list.append(title.upcase)
+      user.checkout_qty += 1
+    end
+    }
+end
+
 def process_checkout title, name
   Book.catalog.each { |book|
   if book.title.downcase == title.downcase
@@ -236,6 +233,7 @@ def process_checkout title, name
     book.holder = name
   end
   }
+  update_checkout_data title, name
 end
 
 def process_checkin title
@@ -245,6 +243,30 @@ def process_checkin title
     book.holder = "The Library"
   end
   }
+end
+
+# Search method for all cardholders
+def all_cardholders
+  User.cardholder_list.sort_by{|user| user.f_name
+    puts
+    puts "
+    Member ID: #{user.local_id}
+    Name: : #{user.l_name}, #{user.f_name}
+    Checkout Qty: #{user.checkout_qty}
+    Titles Checked Out: #{user.checkout_list}
+    "
+
+  }
+end
+
+# Search method for all staff
+def all_staff
+  User.staff_list.sort_by{|user| user.f_name
+    puts
+    puts "
+    Staff ID: #{user.local_id}
+    Name: : #{user.l_name}, #{user.f_name}"
+}
 end
 
 # loop to allow user to search the library
@@ -374,7 +396,7 @@ end
 
 #loop allowing user to move between browsing and checking out
 def primary_flow name, role
-  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Exit"]
+  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
   loop do
     if role != "s"
       puts
@@ -442,6 +464,14 @@ def primary_flow name, role
           end
         elsif activity_response == "e"
           puts
+          puts "Searching Cardholders. . ."
+          all_cardholders
+        elsif activity_response == "f"
+          puts
+          puts "Searching Staff. . ."
+          all_staff
+        elsif activity_response == "x"
+          puts
           puts "Okay, bye."
           abort
         else
@@ -452,7 +482,7 @@ def primary_flow name, role
           if response != "y"
             puts
             puts "Thank you. See you soon."
-            authenticator
+            abort
       end
     end
   end
