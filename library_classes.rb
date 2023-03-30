@@ -139,7 +139,8 @@ end
 def delete_book title
   Book.catalog.sort_by {|book| 
     if book.title.downcase == title.downcase
-      book.delete(title)
+      Book.catalog.delete(book)
+      puts "You got here..."
     end
   }
 end
@@ -366,9 +367,7 @@ def primary_flow name, role
           puts "THIS IS IRREVERSIBLE! DO YOU WANT TO DELETE #{title.upcase}?"
           puts "Enter #86! to delete. Enter anything else to cancel."
           delete_response = gets.chomp.downcase
-          if delete_response != "#86!"
-            break
-          else
+          if delete_response == "#86!"
             delete_book title
           end
         elsif activity_response == "e"
