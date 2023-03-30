@@ -36,7 +36,76 @@ class Book
   end
 end
 
-# Initializing seed library
+class User
+  attr_accessor :f_name, :l_name, :password, :role, :local_id
+  @@user_list = []
+  @@staff_list = []
+  @@cardholder_list = []
+  @@local_id = 100
+
+  def initialize(f_name, l_name, password, role)
+    @f_name = f_name
+    @l_name = l_name
+    @password = password
+    @role = role
+    @@user_list << self
+    if role.downcase == "staff"
+      @local_id = "S—#{@@local_id+= 1}"
+      @@staff_list << self
+    else
+      @local_id = "M—#{@@local_id+= 1}"
+      @@cardholder_list << self
+    end
+  end
+
+  def self.user_list
+    @@user_list
+  end
+
+  def self.staff_list
+    @@staff_list
+  end
+
+  def self.cardholder_list
+    @@cardholder_list
+  end
+
+  def to_s
+    puts
+    "
+    Name: #{@l_name}, #{f_name}
+    Role: #{role}
+    "
+  end
+end
+
+# Initializing seed users
+User.new("Joshua", "Langner", "password123", "staff")
+User.new("Ava", "Langner", "password123", "cardholder")
+User.new("Krista", "Langner", "password123", "staff")
+User.new("Reign", "Langner", "password123", "cardholder")
+
+# def all_cardholders
+  User.cardholder_list.sort_by{|user| user.f_name
+    puts
+    puts "
+    Member ID: #{user.local_id}
+    Name: : #{user.l_name}, #{user.f_name}"
+  }
+# end
+
+# def all_staff
+  User.staff_list.sort_by{|user| user.f_name
+    puts
+    puts "
+    Staff ID: #{user.local_id}
+    Name: : #{user.l_name}, #{user.f_name}"
+}
+# end
+
+
+
+# Initializing seed books
 Book.new("Six of Crows", "Leigh", "Bardugo", "FNTSY", "YA", "Hardcover", "Office: desk shelf")
 Book.new("Crooked Kingdom", "Leigh", "Bardugo", "FNTSY", "YA", "Paperback", "Office: desk shelf")
 Book.new("Shadow and Bone", "Leigh", "Bardugo", "FNTSY", "YA", "Paperback", "Office: desk shelf")

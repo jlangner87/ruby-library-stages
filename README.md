@@ -26,7 +26,7 @@ This repo contains multiple iterations of one project— each project demonstrat
 
 I learn by doing. At each stage of learning, I pause and put my new knowledge to work with practical-application projects. Through the learning process, I recognize areas where my projects can be improved.
 
-Rather than eliminating the early iterations, I chose to keep them side-by-side, so that I could have linear documentation of incremental growth.
+Rather than eliminating the early iterations, I chosen to keep them documented side-by-side in this repo, so that I could have linear documentation of incremental growth.
 
 ---
 
