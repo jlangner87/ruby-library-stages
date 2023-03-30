@@ -37,15 +37,20 @@ class Book
 end
 
 # Initializing seed library
-Book.new("Six of Crows", "Leigh", "Bardugo", "Fantasy", "YA", "Hardcover", "Office: desk shelf")
-Book.new("Crooked Kingdom", "Leigh", "Bardugo", "Fantasy", "YA", "Paperback", "Office: desk shelf")
-Book.new("Shadow and Bone", "Leigh", "Bardugo", "Fantasy", "YA", "Paperback", "Office: desk shelf")
-Book.new("Ruin and Rising", "Leigh", "Bardugo", "Fantasy", "YA", "Paperback", "Office: desk shelf")
-Book.new("Siege and Storm", "Leigh", "Bardugo", "Fantasy", "YA", "Hardcover", "Office: desk shelf")
-Book.new("Holes", "Louis", "Sachar", "Adventure", "Youth", "Paperback", "kid bedroom: chapter book basket")
-Book.new("Bride Collector, The", "Ted", "Dekker", "Thriller", "Adult", "Hardcover", "Office: desk dhelf")
-Book.new("Recursion", "Blake", "Crouch", "Sci-Fi", "Adult", "Paperback", "Office: desk shelf")
-Book.new("Monster's New Undies", "Samantha", "Berger", "Children's", "3-6 years", "Paperback", "Livingroom: cube shelf")
+Book.new("Six of Crows", "Leigh", "Bardugo", "FNTSY", "YA", "Hardcover", "Office: desk shelf")
+Book.new("Crooked Kingdom", "Leigh", "Bardugo", "FNTSY", "YA", "Paperback", "Office: desk shelf")
+Book.new("Shadow and Bone", "Leigh", "Bardugo", "FNTSY", "YA", "Paperback", "Office: desk shelf")
+Book.new("Ruin and Rising", "Leigh", "Bardugo", "FNTSY", "YA", "Paperback", "Office: desk shelf")
+Book.new("Siege and Storm", "Leigh", "Bardugo", "FNTSY", "YA", "Hardcover", "Office: desk shelf")
+Book.new("Holes", "Louis", "Sachar", "ADV", "MG", "Paperback", "kid bedroom: chapter book basket")
+Book.new("Bride Collector, The", "Ted", "Dekker", "THRL", "A", "Hardcover", "Office: desk dhelf")
+Book.new("Recursion", "Blake", "Crouch", "SCI", "A", "Paperback", "Office: desk shelf")
+Book.new("Monster's New Undies", "Samantha", "Berger", "CHILD", "CH", "Paperback", "Livingroom: cube shelf")
+Book.new("Greatest Tales of Horror", "HP", "Lovecraft", "CLAS", "A", "Harcdover", "Office: desk shelf")
+Book.new("Hooked", "Les", "Edgerton", "NF", "A", "Paperback", "Office: Stacked under the sharpie cup")
+Book.new("The Foot Book", "Dr.", "Seuss", "CHILD", "TB", "Board Book", "Livingroom: cube shelf")
+Book.new("Our Town", "Thornton", "Wilder", "SCR", "A", "Paperback", "Office: desk shelf")
+
 
 # Search methods
 def browse_all
@@ -159,6 +164,8 @@ end
 # loop to allow user to search the library
 def search_catalog name, role
   search_methods = ["A = Browse All", "B = By Title", "C = By Author", "D = By Genre", "E = By Audience Age", "F = By Age & Genre"]
+  genres = ["FNTSY = Fantasy", "SCI = Sci-Fi", "THRL = Thriller", "ADV = Adventure", "CHILD = Children's", "NF = Non-Fiction", "SCR = Script", "CLAS = Classic",]
+  age = ["A = Adult", "YA = Young Adult", "MG = Middle Grade", "CH = Children", "TB = Toddlers & Babies"]
   loop do
     puts
     puts "Please choose one of the following search methods:"
@@ -168,28 +175,49 @@ def search_catalog name, role
       browse_all
     elsif response == "b"
       puts
-      puts "Searching by TITLE"
+      puts "Searching by TITLE. . ."
       puts "Which title do you want to search?"
       title = gets.chomp.downcase
       search_by_title title
     elsif response == "c"
       puts
-      puts "Searching AUTHOR"
+      puts "Searching AUTHOR. . ."
+      puts "What is the last name of the author you want to search?"
+      l_name = gets.chomp.downcase
+      puts
+      puts "What is the first name of the author you want to search?"
+      f_name = gets.chomp.downcase
+      search_by_author l_name, f_name
     elsif response == "d"
       puts
-      puts "Searching GENRE"
+      puts "Searching GENRE. . ."
+      puts "Which genre would you like to search?"
+      puts genres
+      genre_query = gets.chomp.downcase
+      search_by_genre genre_query
     elsif response == "e"
       puts
-      puts "Searching AUDIENCE AGE"
+      puts "Searching AUDIENCE AGE. . ."
+      puts "Which age group do you want to searh?"
+      puts age
+      age_query = gets.chomp.downcase
+      search_by_audience_age age_query
     elsif response == "f"
       puts
-      puts "Searching AGE & GENRE"
+      puts "Searching AGE & GENRE. . ."
+      puts "Which age group do you want to searh?"
+      puts age
+      age_query = gets.chomp.downcase
+      puts "Which genre would you like to search?"
+      puts genres
+      genre_query = gets.chomp.downcase
+      search_by_genre_audience_age genre_query, age_query
     else
       puts
       puts "That is not a search method. Try again."
     end
     puts
-    puts " Do you want to keep searching? (Y/N)"
+    puts "Do you want to keep searching? (Y/N)"
     continue_response = gets.chomp.downcase
     if continue_response != "y"
       puts
