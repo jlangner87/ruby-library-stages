@@ -140,7 +140,8 @@ def delete_book title
   Book.catalog.sort_by {|book| 
     if book.title.downcase == title.downcase
       Book.catalog.delete(book)
-      puts "You got here..."
+      puts
+      puts "The book has been deletd from the catalog"
     end
   }
 end
