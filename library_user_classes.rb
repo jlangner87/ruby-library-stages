@@ -50,14 +50,15 @@ class User
     @l_name = l_name
     @password = password
     @role = role
+    @checkout_list = []
+    @checkout_qty = @checkout_list.length
     @@user_list << self
     if role.downcase == "staff"
       @local_id = "S—#{@@local_id+= 1}"
       @@staff_list << self
+      @@cardholder_list << self
     else
       @local_id = "M—#{@@local_id+= 1}"
-      @checkout_list = []
-      @checkout_qty = @checkout_list.length
       @@cardholder_list << self
     end
   end
@@ -190,7 +191,7 @@ def search_by_genre_audience_age genre, audience
   puts "End of results"
 end
 
-# Method creating a new instance of the book. At this point, it only works until the loop closes
+# Method creating a new instance of the book. At this point, it only exists until the loop closes
 def add_book title, author_last_name, author_first_name, genre, audience, book_binding, location
   Book.new(title, author_last_name, author_first_name, genre, audience, book_binding, location)
 end
@@ -282,6 +283,56 @@ def all_staff
     Staff ID: #{user.local_id}
     Name: : #{user.l_name}, #{user.f_name}"
 }
+end
+
+# Method for staff to add user
+def staff_add_user
+  puts
+  print "First Name: "
+  f_name = gets.chomp
+  l_name = gets.chomp
+  role = gets.chomp
+  password = gets.chomp
+  User.new(f_name, l_name, password, role)
+end
+
+# Method for users to set password
+def password_setter
+  loop do
+    puts
+    print "Password: "
+  password_input = gets.chomp
+    puts
+    print "Verify Password: "
+    password_verify = gets.chomp
+    if password_input == password_verify
+      password = password_input
+      return password
+    else
+      puts
+      puts "Those passwords did not match"
+    end
+  end
+end
+
+# Method for new users to sign up
+def sign_up
+  puts
+  print "First Name: "
+  f_name = gets.chomp
+  puts
+  print "Last Name: "
+  l_name = gets.chomp
+  password = password_setter
+  puts
+  puts "Your user account has been created successfully"
+  role = "cardholder"
+  User.new(f_name, l_name, password, role)
+  primary_flow f_name, role
+end
+
+#Method determines if user is staff or cardholder and moves them to the correct flow automatically
+def role_checker
 end
 
 # loop to allow user to search the library
@@ -398,6 +449,7 @@ end
 # Authentication of user and splitting the control flow into user and staff branches
 #   FUTURE: I want to work actual authentication into this method.
 def authenticator
+  sign_up
   puts "Welcome to the Langner Library."
   puts "Please enter your full name."
   name = gets.chomp
