@@ -483,7 +483,7 @@ end
 
 #loop allowing user to move between browsing and checking out
 def primary_flow
-  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
+  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "G = Check Out Book", "X = Exit"]
   puts
   puts "Welcome to the Langner Library."
   puts
@@ -570,6 +570,10 @@ def primary_flow
           puts
           puts "Searching Staff. . ."
           all_staff
+        elsif activity_response == "g"
+          puts
+          puts "Switching to Cardholder profile. . ."
+          checkout_flow
         elsif activity_response == "x"
           puts
           puts "Okay, bye."
