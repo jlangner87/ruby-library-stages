@@ -357,7 +357,7 @@ def search_catalog name, role
     if continue_response != "y"
       puts
       puts "Exiting search..."
-      primary_flow name, role
+      primary_flow
     end
   end
 end
@@ -383,7 +383,7 @@ def checkout_flow name
         response = gets.chomp.downcase
         if response != "y"
           puts "Happy Reading! Hope to see you soon!"
-          authenticator
+          primary_flow
         end
       else
         puts
@@ -393,7 +393,7 @@ def checkout_flow name
         response = gets.chomp.downcase
         if response != "y"
           puts "Thank you. Come again."
-          authenticator
+          primary_flow
         end
       end
     else
@@ -401,7 +401,7 @@ def checkout_flow name
       puts "Do you want to search for a different book? (Y/N)"
       response = gets.chomp.downcase
       if response != "y"
-        authenticator
+        primary_flow
       end
     end
   end
@@ -473,6 +473,14 @@ def authenticator
     name
 end
 
+def role_checker name
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == name.downcase
+    return user.role
+  end
+  }
+end
+
 #loop allowing user to move between browsing and checking out
 def primary_flow
   staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
@@ -485,12 +493,12 @@ def primary_flow
     sign_up
   end
   name = authenticator
-  # add role_checker method here.
-  role = "s" # remove this once the role_checker is built
+  role = role_checker name
   loop do
-    if role != "s"
+    if role == "cardholder"
       puts
-      puts "Welcome #{name}!"
+      puts "Welcome #{name.capitalize}!"
+      puts
       puts "Would you like to browse the titles or check something out now?"
       puts "Enter B to browse or C to checkout."
       flow = gets.chomp.downcase
@@ -501,7 +509,7 @@ def primary_flow
       else
         "That was not an option. Let's try that again"
       end
-    else
+    elsif role == "staff"
       puts
       puts "Welcome #{name}!"
       puts "What would you like to do?"
@@ -565,7 +573,7 @@ def primary_flow
         elsif activity_response == "x"
           puts
           puts "Okay, bye."
-          abort
+          primary_flow
         else
           puts "That is not an option. Try again."
         end
@@ -574,7 +582,7 @@ def primary_flow
           if response != "y"
             puts
             puts "Thank you. See you soon."
-            abort
+            primary_flow
       end
     end
   end
