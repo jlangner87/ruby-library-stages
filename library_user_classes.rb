@@ -44,7 +44,6 @@ class User
   @@cardholder_list = []
   @@checkout_qty = 0
 
-
   def initialize(f_name, l_name, password, role)
     @f_name = f_name
     @l_name = l_name
@@ -220,7 +219,7 @@ def status_query title
   }
 end
 
-# Method changing the checkout status and book holder attributes
+# Method adding the book to the user and incrementing the checkout qty
 def update_user_data_out title, input_name
   User.cardholder_list.each {|user|
     if user.f_name.downcase == input_name.downcase
@@ -229,7 +228,7 @@ def update_user_data_out title, input_name
     end
     }
 end
-
+# Method processing the checkout of a book
 def process_checkout title, name
   Book.catalog.each { |book|
     if book.title.downcase == title.downcase
@@ -240,6 +239,7 @@ def process_checkout title, name
   update_user_data_out title, name
 end
 
+# Method removing the book from the user and decrementing the checkout qty
 def update_user_data_in user_f_name, title
   User.cardholder_list.each {|user|
   if user.f_name.downcase == user_f_name.downcase
@@ -249,6 +249,7 @@ def update_user_data_in user_f_name, title
   }
 end
 
+# Method processing the checkin of a book
 def process_checkin title
   from_user = ""
   Book.catalog.each { |book|
@@ -271,7 +272,6 @@ def all_cardholders
     Checkout Qty: #{user.checkout_qty}
     Titles Checked Out: #{user.checkout_list}
     "
-
   }
 end
 
@@ -282,7 +282,7 @@ def all_staff
     puts "
     Staff ID: #{user.local_id}
     Name: : #{user.l_name}, #{user.f_name}"
-}
+  }
 end
 
 # Method for staff to add user
@@ -294,44 +294,6 @@ def staff_add_user
   role = gets.chomp
   password = gets.chomp
   User.new(f_name, l_name, password, role)
-end
-
-# Method for users to set password
-def password_setter
-  loop do
-    puts
-    print "Password: "
-  password_input = gets.chomp
-    puts
-    print "Verify Password: "
-    password_verify = gets.chomp
-    if password_input == password_verify
-      password = password_input
-      return password
-    else
-      puts
-      puts "Those passwords did not match"
-    end
-  end
-end
-
-# Method for new users to sign up
-def sign_up
-  puts
-  print "First Name: "
-  f_name = gets.chomp
-  puts
-  print "Last Name: "
-  l_name = gets.chomp
-  password = password_setter
-  puts
-  puts "Your user account has been created successfully"
-  role = "cardholder"
-  User.new(f_name, l_name, password, role)
-end
-
-#Method determines if user is staff or cardholder and moves them to the correct flow automatically
-def role_checker
 end
 
 # loop to allow user to search the library
@@ -445,8 +407,75 @@ def checkout_flow name
   end
 end
 
+# Method for users to set password
+def password_setter
+  loop do
+    puts
+    print "Password: "
+  password_input = gets.chomp
+    puts
+    print "Verify Password: "
+    password_verify = gets.chomp
+    if password_input == password_verify
+      password = password_input
+      return password
+    else
+      puts
+      puts "Those passwords did not match"
+    end
+  end
+end
+
+# Method for new users to sign up
+def sign_up
+  puts
+  print "First Name: "
+  f_name = gets.chomp
+  puts
+  print "Last Name: "
+  l_name = gets.chomp
+  password = password_setter
+  puts
+  puts "Your user account has been created successfully"
+  role = "cardholder"
+  User.new(f_name, l_name, password, role)
+end
+
+# Method verifying User name and password match input
+def verify name, password
+  verification_status = "fail"
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == name.downcase && user.password == password
+    verification_status = "pass"
+  end
+  }
+  verification_status
+end
+
 # Authentication of user and splitting the control flow into user and staff branches
 def authenticator
+    puts
+    puts "Please log in"
+    print "First Name :"
+    name = gets.chomp
+    puts
+    print "Password: "
+    password = gets.chomp
+    verification_result = verify name, password
+    if verification_result != "pass"
+      puts
+      puts "That name and password does not exist in our system. Try again."
+      authenticator
+    else
+      puts
+      puts "Logging in . . ."
+    end
+    name
+end
+
+#loop allowing user to move between browsing and checking out
+def primary_flow
+  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
   puts
   puts "Welcome to the Langner Library."
   puts
@@ -455,21 +484,6 @@ def authenticator
   if response != "y"
     sign_up
   end
-  puts
-  puts "Please log in"
-  print "First Name :"
-  name = gets.chomp
-  puts
-  print "Password: "
-  password = gets.chomp
-  puts
-  role = "s" # role_checker
-  return name
-end
-
-#loop allowing user to move between browsing and checking out
-def primary_flow
-  staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
   name = authenticator
   # add role_checker method here.
   role = "s" # remove this once the role_checker is built
@@ -489,6 +503,7 @@ def primary_flow
       end
     else
       puts
+      puts "Welcome #{name}!"
       puts "What would you like to do?"
       puts staff_activity
       activity_response = gets.chomp.downcase
