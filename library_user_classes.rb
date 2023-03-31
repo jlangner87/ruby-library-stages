@@ -328,7 +328,6 @@ def sign_up
   puts "Your user account has been created successfully"
   role = "cardholder"
   User.new(f_name, l_name, password, role)
-  primary_flow f_name, role
 end
 
 #Method determines if user is staff or cardholder and moves them to the correct flow automatically
@@ -447,26 +446,37 @@ def checkout_flow name
 end
 
 # Authentication of user and splitting the control flow into user and staff branches
-#   FUTURE: I want to work actual authentication into this method.
 def authenticator
-  sign_up
+  puts
   puts "Welcome to the Langner Library."
-  puts "Please enter your full name."
+  puts
+  puts "Are you a returning user? (Y/N)"
+  response = gets.chomp.downcase
+  if response != "y"
+    sign_up
+  end
+  puts
+  puts "Please log in"
+  print "First Name :"
   name = gets.chomp
   puts
-  puts "Welcome #{name}!"
-  puts "Are you a card holder or library staff?"
-  puts " Enter C for card holder or S for staff:"
-  role = gets.chomp.downcase
-  primary_flow name, role
+  print "Password: "
+  password = gets.chomp
+  puts
+  role = "s" # role_checker
+  return name
 end
 
 #loop allowing user to move between browsing and checking out
-def primary_flow name, role
+def primary_flow
   staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "X = Exit"]
+  name = authenticator
+  # add role_checker method here.
+  role = "s" # remove this once the role_checker is built
   loop do
     if role != "s"
       puts
+      puts "Welcome #{name}!"
       puts "Would you like to browse the titles or check something out now?"
       puts "Enter B to browse or C to checkout."
       flow = gets.chomp.downcase
@@ -555,4 +565,4 @@ def primary_flow name, role
   end
 end
 
-authenticator
+primary_flow
