@@ -48,7 +48,7 @@ I used for loops and if/else statements to create a control flow. Then I created
 
 ##### Areas to improve in the next iteration:
 
-The book data could be so much more robust and useful if they were programmed as instances in a Book class. The control flows need to be refactored and cleaned up for readability. Many of the methods of the function should be moved outside of the control flow, so that they are global methods and can be used in multiple flows.
+The book data could be so much more robust and useful if it was programmed as instances of a Book class. The control flows need to be refactored and cleaned up for readability. Many of the methods of the function should be moved outside of the control flow, so that they are global methods and can be used in multiple flows.
 
 ---
 
@@ -98,30 +98,48 @@ file: _library_user_classes.rb_
 
 ##### Overview
 
+Added User class. Instances of User are sorted by "role" attribure and stored as either "staff" or "cardholder."
+
+Control flow branches based on User role.
+
+Added authentication method that:
+
+- Takes name and password input
+- Checks username and password input against username and password User attributes
+- If User passes, their role attribute is checked and they are sent to the branch that corresponds with their role.
+
+Added signup method that:
+
+- Asks user if they have an account
+- If they do not have an account, signup method is called
+- Calls a set_password method
+- Uses the input to initalize a new instance of User
+- Routes User back to the password screen
+
+set_password method:
+
+- Requires new User to create a new password.
+- Prompts new user to enter the new password again.
+- If the passwords match, password value is set as password attribute
+- If the passwords do not match, User is looped back to the beginning of set_password
+
 ##### Areas to improve in the next iteration:
 
-Add authentication.
+Set parameters for strong passwords.
+
+Add username attribute to User and authenticate with username instead of f_name.
+
+Refactor control flow, so that:
+
+- When User is done with an activity, they loop back to the options for their role (rather than looping back to the login)
+- Logout option that loops back to authentication method
+- Only staff Users have ability to close program.
 
 ---
 
-### **_Future Iterations_**
+### **_End Goal_**
 
-I am currently (as of 03/28/2023) adding a CardHolder class where library card holders can be stored. Then the program will check if the user is a member before allowing them to check out the book.
-
-A method that adds books to the CardHolder object when a book is checked out and removes them when the book is checked back in.
-
-A LibraryStaff class where library staff can be stored as objects.
-
-An admin control flow that is only accessible to users in the Library Staff class. Methods to add (Create) books, edit book information (update), and take books out of circulation (delete).
-
-End goal: Move away from CLI interaction and have a fully functioning frontend for users to interact with.
-
----
-
-### **_Technologies Used_**
-
-- Ruby
-- Rails
+Move away from CLI to a fully functioning React frontend calling a Ruby on Rails API
 
 ---
 
