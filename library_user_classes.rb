@@ -1,3 +1,4 @@
+# CLASSES
 class Book
   attr_accessor :title, :author_last_name, :author_first_name, :genre, :audience, :binding, :location, :status, :holder
   @@catalog = []
@@ -36,12 +37,13 @@ class Book
   end
 end
 
+# NEW CLASS: User
 class User
   attr_accessor :f_name, :l_name, :password, :role, :local_id, :checkout_list, :checkout_qty
   @@local_id = 100
   @@user_list = []
-  @@staff_list = []
-  @@cardholder_list = []
+  @@staff_list = []        # staff users are stored here for sorting and iterating
+  @@cardholder_list = []   # cardholder users are stored here for sorting and iterating
   @@checkout_qty = 0
 
   def initialize(f_name, l_name, password, role)
@@ -111,13 +113,90 @@ Book.new("Hooked", "Les", "Edgerton", "NF", "A", "Paperback", "Office: Stacked u
 Book.new("The Foot Book", "Dr.", "Seuss", "CHILD", "TB", "Board Book", "Livingroom: cube shelf")
 Book.new("Our Town", "Thornton", "Wilder", "SCR", "A", "Paperback", "Office: desk shelf")
 
+## AUTHENTICATION
+# Method: Setting a new password
+def password_setter
+  loop do
+    puts
+    print "Password: "
+  password_input = gets.chomp
+    puts
+    print "Verify Password: "
+    password_verify = gets.chomp
+    if password_input == password_verify
+      password = password_input
+      return password
+    else
+      puts
+      puts "Those passwords did not match"
+    end
+  end
+end
 
-# Search methods
+# Method: New users create a User instance for themselves
+def sign_up
+  puts
+  print "First Name: "
+  f_name = gets.chomp
+  puts
+  print "Last Name: "
+  l_name = gets.chomp
+  password = password_setter
+  puts
+  puts "Your user account has been created successfully"
+  role = "cardholder"
+  User.new(f_name, l_name, password, role)
+end
+
+# Method: Verifying password input vs password attribute
+def verify name, password
+  verification_status = "fail"
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == name.downcase && user.password == password
+    verification_status = "pass"
+  end
+  }
+  verification_status
+end
+
+# Method: Accept input for verification
+def authenticator
+    puts
+    puts "Please log in"
+    print "First Name :"
+    name = gets.chomp
+    puts
+    print "Password: "
+    password = gets.chomp
+    verification_result = verify name, password
+    if verification_result != "pass"
+      puts
+      puts "That name and password does not exist in our system. Try again."
+      authenticator
+    else
+      puts
+      puts "Logging in . . ."
+    end
+    name
+end
+
+# Method: return role attribute
+def role_checker name
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == name.downcase
+    return user.role
+  end
+  }
+end
+
+# BOOK SEARCH METHODS
+# Search Method: Browse All
 def browse_all
   puts
   puts Book.catalog.sort_by {|book| book.title}
 end
 
+# Search Method: Search by Title
 def search_by_title title
   puts
   puts "Books matching the title: #{title}"
@@ -134,6 +213,7 @@ def search_by_title title
   puts "End of results"
 end
 
+# Search Method: Search by Author
 def search_by_author l_name, *f_name
   puts
   puts "Books matching the author: #{f_name} #{l_name}"
@@ -148,6 +228,7 @@ def search_by_author l_name, *f_name
   puts "End of results"
 end
 
+# Search Method: Search by Genre
 def search_by_genre genre
   puts
   puts "Books matching the genre: #{genre}"
@@ -162,6 +243,7 @@ def search_by_genre genre
   puts "End of results"
 end
 
+# Search Method: Search by Audience Age
 def search_by_audience_age audience
   puts
   puts "Books matching the audience age: #{audience}"
@@ -176,6 +258,7 @@ def search_by_audience_age audience
   puts "End of results"
 end
 
+# Search Method: Search by Genre && Audience Age
 def search_by_genre_audience_age genre, audience
   puts
   puts "Books matching: #{audience} & #{genre}"
@@ -190,12 +273,14 @@ def search_by_genre_audience_age genre, audience
   puts "End of results"
 end
 
-# Method creating a new instance of the book. At this point, it only exists until the loop closes
+## STAFF ONLY METHODS
+
+# Method: New book instance
 def add_book title, author_last_name, author_first_name, genre, audience, book_binding, location
   Book.new(title, author_last_name, author_first_name, genre, audience, book_binding, location)
 end
 
-# Method deleting an instance of a book
+# Method: delete book instance
 def delete_book title
   Book.catalog.sort_by {|book| 
     if book.title.downcase == title.downcase
@@ -206,63 +291,7 @@ def delete_book title
   }
 end
 
-# Method checking the status of a book
-def status_query title
-  Book.catalog.each { |book|
-  if book.title.downcase == title.downcase
-    if book.status.downcase == "available"
-      return "available"
-    else
-      return "checked out"
-    end
-  end
-  }
-end
-
-# Method adding the book to the user and incrementing the checkout qty
-def update_user_data_out title, input_name
-  User.cardholder_list.each {|user|
-    if user.f_name.downcase == input_name.downcase
-      user.checkout_list.append(title.upcase)
-      user.checkout_qty += 1
-    end
-    }
-end
-# Method processing the checkout of a book
-def process_checkout title, name
-  Book.catalog.each { |book|
-    if book.title.downcase == title.downcase
-      book.status = "checked out"
-      book.holder = name
-  end
-  }
-  update_user_data_out title, name
-end
-
-# Method removing the book from the user and decrementing the checkout qty
-def update_user_data_in user_f_name, title
-  User.cardholder_list.each {|user|
-  if user.f_name.downcase == user_f_name.downcase
-    user.checkout_list.delete(title.upcase)
-    user.checkout_qty -= 1
-  end
-  }
-end
-
-# Method processing the checkin of a book
-def process_checkin title
-  from_user = ""
-  Book.catalog.each { |book|
-  if book.title.downcase == title.downcase
-    from_user = book.holder
-    book.status = "available"
-    book.holder = "The Library"
-  end
-  }
-  update_user_data_in from_user, title
-end
-
-# Search method for all cardholders
+# Method: show all card holders
 def all_cardholders
   User.cardholder_list.sort_by{|user| user.f_name
     puts
@@ -275,7 +304,7 @@ def all_cardholders
   }
 end
 
-# Search method for all staff
+# Method: Show all staff
 def all_staff
   User.staff_list.sort_by{|user| user.f_name
     puts
@@ -285,7 +314,8 @@ def all_staff
   }
 end
 
-# Method for staff to add user
+# Method: Add new user
+# !! This one is not in the control flow yet !!
 def staff_add_user
   puts
   print "First Name: "
@@ -296,7 +326,71 @@ def staff_add_user
   User.new(f_name, l_name, password, role)
 end
 
-# loop to allow user to search the library
+## CHECK-IN and CHECK-OUT BOOKS
+
+# Method: Check Book Availability
+def status_query title
+  Book.catalog.each { |book|
+  if book.title.downcase == title.downcase
+    if book.status.downcase == "available"
+      return "available"
+    else
+      return "checked out"
+    end
+  end
+  }
+end
+
+# Method: Checkout (user updated)
+#Add book to User checkout_list & Increment checkout_qty
+def update_user_data_out title, input_name
+  User.cardholder_list.each {|user|
+    if user.f_name.downcase == input_name.downcase
+      user.checkout_list.append(title.upcase)
+      user.checkout_qty += 1
+    end
+    }
+end
+
+# Method: Checkout (book updated)
+# status = "checked out" & holder = user f_name
+def process_checkout title, name
+  Book.catalog.each { |book|
+    if book.title.downcase == title.downcase
+      book.status = "checked out"
+      book.holder = name
+  end
+  }
+  update_user_data_out title, name
+end
+
+# Method: Checkin (user updated)
+# remove book from user checkout_list & Decrement checkout qty
+def update_user_data_in user_f_name, title
+  User.cardholder_list.each {|user|
+  if user.f_name.downcase == user_f_name.downcase
+    user.checkout_list.delete(title.upcase)
+    user.checkout_qty -= 1
+  end
+  }
+end
+
+# Method: Checkin (book updated)
+# status = "available" & holder = "The Library"
+def process_checkin title
+  from_user = ""
+  Book.catalog.each { |book|
+  if book.title.downcase == title.downcase
+    from_user = book.holder
+    book.status = "available"
+    book.holder = "The Library"
+  end
+  }
+  update_user_data_in from_user, title
+end
+
+
+# Control flow accessing Search Methods
 def search_catalog name, role
   search_methods = ["A = Browse All", "B = By Title", "C = By Author", "D = By Genre", "E = By Audience Age", "F = By Age & Genre"]
   genres = ["FNTSY = Fantasy", "SCI = Sci-Fi", "THRL = Thriller", "ADV = Adventure", "CHILD = Children's", "NF = Non-Fiction", "SCR = Script", "CLAS = Classic",]
@@ -362,7 +456,7 @@ def search_catalog name, role
   end
 end
 
-# loop to allow user to check out multiple books
+# Control flow accessing the checkout methods
 def checkout_flow name
   loop do
     puts
@@ -407,81 +501,7 @@ def checkout_flow name
   end
 end
 
-# Method for users to set password
-def password_setter
-  loop do
-    puts
-    print "Password: "
-  password_input = gets.chomp
-    puts
-    print "Verify Password: "
-    password_verify = gets.chomp
-    if password_input == password_verify
-      password = password_input
-      return password
-    else
-      puts
-      puts "Those passwords did not match"
-    end
-  end
-end
-
-# Method for new users to sign up
-def sign_up
-  puts
-  print "First Name: "
-  f_name = gets.chomp
-  puts
-  print "Last Name: "
-  l_name = gets.chomp
-  password = password_setter
-  puts
-  puts "Your user account has been created successfully"
-  role = "cardholder"
-  User.new(f_name, l_name, password, role)
-end
-
-# Method verifying User name and password match input
-def verify name, password
-  verification_status = "fail"
-  User.cardholder_list.each {|user|
-  if user.f_name.downcase == name.downcase && user.password == password
-    verification_status = "pass"
-  end
-  }
-  verification_status
-end
-
-# Authentication of user and splitting the control flow into user and staff branches
-def authenticator
-    puts
-    puts "Please log in"
-    print "First Name :"
-    name = gets.chomp
-    puts
-    print "Password: "
-    password = gets.chomp
-    verification_result = verify name, password
-    if verification_result != "pass"
-      puts
-      puts "That name and password does not exist in our system. Try again."
-      authenticator
-    else
-      puts
-      puts "Logging in . . ."
-    end
-    name
-end
-
-def role_checker name
-  User.cardholder_list.each {|user|
-  if user.f_name.downcase == name.downcase
-    return user.role
-  end
-  }
-end
-
-#loop allowing user to move between browsing and checking out
+# Control flow leading to all other methods and flows (Call this method to start the program)
 def primary_flow
   staff_activity = ["A = Search Library", "B = Check in a Book", "C = Add a Book", "D = Delete a Book", "E = Search Card Holders", "F = Search Staff", "G = Check Out Book", "X = Exit"]
   puts
