@@ -1,3 +1,6 @@
+require_relative 'auth_kit'
+
+## TODO
 ## Set password parameters
 ## Add username attribute to User and authenticate with username instead of f_name.
 ## When User is done with an activity, they loop back to the options for their role (rather than looping back to the login)
@@ -126,7 +129,7 @@ def password_setter
   loop do
     puts
     print "Password: "
-  password_input = gets.chomp
+    password_input = gets.chomp
     puts
     print "Verify Password: "
     password_verify = gets.chomp
