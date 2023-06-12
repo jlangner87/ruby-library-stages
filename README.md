@@ -137,6 +137,14 @@ Refactor control flow, so that:
 
 ---
 
+### **_Stage 4: Ruby on Rails_**
+
+##### Pausing this project to take some time to leaern the basics of Ruby on Rails.
+
+Stage 4 will be a complete refactoring of the application. My goal is to use MCV architecture in order to best accomplish user interaction with the "Users" and "Books" models.
+
+---
+
 ### **_End Goal_**
 
 Move away from CLI to a fully functioning React frontend calling a Ruby on Rails API
